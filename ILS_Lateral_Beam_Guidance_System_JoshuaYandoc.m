@@ -16,8 +16,9 @@ global B_SM g G_c J_M K_A K_D K_E K_P K_R K_T K_V L_A R_A T_A V_T R K_I
 % Appendix A: Given Parameters for the Lateral Beam Guidance System
 B_SM = 0.7;
 g = 9.81; % m/s^2
+% Original coupler gain
 %G_c = 45.5;
-% for Q7
+% Reutned coupler gain for Q7
 G_c = 25.5;
 J_M = 0.006;
 K_A = 1.2;
@@ -30,6 +31,7 @@ K_V = 1.3;
 L_A = 0.2; % H
 R_A = 10; % Ohms
 T_A = 2.0; % s
+% Introduction of integral term
 K_I = 0.9;
 
 %----------------------------CAN CHANGE THIS---------------------------

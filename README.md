@@ -1,2 +1,0 @@
-# ILS-Lateral-Beam-Guidance
-
