@@ -166,6 +166,7 @@ block_psi = simout.psi;
 
 figure()
 tiledlayout(2,2)
+title(tiledlayout(2,2), 'State outputs from SIMULINK Model - Joshua Yandoc', 'Color', [1 0 0])
 
 nexttile
 plot(block_time, block_phi)
