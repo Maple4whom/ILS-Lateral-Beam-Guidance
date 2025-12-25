@@ -1,0 +1,15 @@
+# MATLAB / Simulink
+*.asv
+*.autosave
+slprj/
+*.slxc
+*.slxc.cache
+*.mex*
+*.p
+*.m~
+*.mdl.r*
+*.mat
+
+# OS
+.DS_Store
+Thumbs.db
