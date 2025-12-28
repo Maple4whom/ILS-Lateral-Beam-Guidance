@@ -156,6 +156,8 @@ ylabel('lateral displacement, Y_R [m]')
 % Plotting the SIMULINK Model 
 
 model = 'Lateral_Beam_Guidance_System_Block_Diagram';
+% For saturated system 
+USE_ACTUATOR_LIMITS = true;
 % Load the SIMULINK model
 load_system(model);
 simout = sim(model);
@@ -165,9 +167,10 @@ block_Y_R = simout.Y_R;
 block_p = simout.p;
 block_phi = simout.phi;
 block_psi = simout.psi;
-% For saturated plot 
+% Use for plotting saturated system
 block_del_a_sat = simout.del_a_sat;
 block_del_a_unsat = simout.del_a_unsat;
+block_del_a_rate = simout.del_a_rate;
 
 figure()
 tiledlayout(2,2)
@@ -197,11 +200,30 @@ title('SIMULINK Simulation of Lateral Displacement, Y_R')
 xlabel('time[s]')
 ylabel('lateral displacement, Y_R [m]')
 
+
+% Saturation system comparison to ideal system
 figure()
-plot(block_time, block_del_a_sat, 'linewidth', 2)
-title('SIMULINK Sim of deflection angle (Saturated), \delta_a')
+tiledlayout(2,2);
+
+% Plotting 'ideal' deflection angle (unsaturated, no slew rate)
+ax1 = nexttile([2 1]);
+plot(block_time, block_del_a_unsat, 'linewidth', 2)
+title('Ideal deflection angle, \delta_a (unsat + no rate limit)')
 xlabel('time[s]')
 ylabel('deflection angle \delta_a [deg]')
+
+% Compare to system w sat + slew rate
+ax12 = nexttile;
+plot(block_time, block_del_a_sat, 'linewidth', 2)
+title('Saturated deflection angle, \delta_a')
+xlabel('time[s]')
+ylabel('deflection angle \delta_a [deg]')
+
+ax22 = nexttile;
+plot(block_time, block_del_a_rate, 'linewidth', 2)
+title('Slew rate of saturated deflection angle, d\delta_a/dt')
+xlabel('time[s]')
+ylabel('def. angle rate d\delta_a/dt [deg/s]')
 
 %% After Phase 0
 
