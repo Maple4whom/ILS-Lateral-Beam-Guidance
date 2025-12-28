@@ -13,6 +13,8 @@ Much like the phase 0 log, this document is meant to log the system's updates as
 ## Actuator Limits
 1. Began implementation - Dec. 27, 2025
 2. Added Saturation block to Simuliunk model; Revised model to include pre and post saturation logging (see 'Aileron Servo with Saturation'.png) - Dec 27, 2025
+3. Added Rate limiter to Servo subsystem (see 'Aileron Servo with Rate Limiter'.png)
 
     # Values
-    - Saturation limit of +/- 20 deg
+    - Saturation limit of +/- 20 deg - Dec. 27, 2025
+    - Slew rate limit of +/- 30 deg/s - Dec. 27, 2025
