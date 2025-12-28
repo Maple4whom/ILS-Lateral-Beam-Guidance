@@ -166,8 +166,7 @@ block_p = simout.p;
 block_phi = simout.phi;
 block_psi = simout.psi;
 % For saturated plot 
-block_del_a_sat = simout.del_a_sat;
-block_del_a_unsat = simout.del_a_unsat;
+
 
 figure()
 tiledlayout(2,2)
@@ -196,12 +195,6 @@ plot(block_time, block_Y_R, 'linewidth', 2)
 title('SIMULINK Simulation of Lateral Displacement, Y_R')
 xlabel('time[s]')
 ylabel('lateral displacement, Y_R [m]')
-
-figure()
-plot(block_time, block_del_a_sat, 'linewidth', 2)
-title('SIMULINK Sim of deflection angle (Saturated), \delta_a')
-xlabel('time[s]')
-ylabel('deflection angle \delta_a [deg]')
 
 %% After Phase 0
 
