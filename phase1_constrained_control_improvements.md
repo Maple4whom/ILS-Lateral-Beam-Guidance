@@ -22,3 +22,4 @@ Much like the phase 0 log, this document is meant to log the system's updates as
 
 # Where to pick up next time
 1. look into suspicious plots - investigate where proper feedback should go - Dec 28, 2025
+    Update: Investigated the behavior - unresolved --> will continue - Dec 28/29, 2025
