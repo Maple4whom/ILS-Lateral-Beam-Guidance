@@ -162,6 +162,7 @@ USE_ACTUATOR_CASE = [-1 1 2 3];
 names = ["unconstrained case", "actuator 1", "actuator 2", "actuator 3"];
 % Load the SIMULINK model
 load_system(model);
+grid on
 for actuator = 1:numel(USE_ACTUATOR_CASE)
     USE_ACTUATOR = USE_ACTUATOR_CASE(actuator);
     % Run the model and compare against all actuator limits
@@ -173,11 +174,8 @@ for actuator = 1:numel(USE_ACTUATOR_CASE)
     block_phi = simout.phi;
     block_psi = simout.psi;
     % Use for plotting saturated system
-    block_del_a_rate = simout.del_a_rate * (180/pi); % Convert to deg
-    block_del_a_sat = simout.del_a * (180/pi); % Convert to deg
-    if actuator == 1
-        block_del_a_ideal = simout.del_a_ideal * (180/pi); % Convert to deg
-    end
+    block_del_a_rate = simout.del_a_rate;
+    block_del_a_sat = simout.del_a;
     
     figure()
     tiledlayout(2,2)
@@ -188,28 +186,24 @@ for actuator = 1:numel(USE_ACTUATOR_CASE)
     
     nexttile
     plot(block_time, block_phi, 'linewidth', 2)
-    grid on
     title('SIMULINK Simulation of bank angle, \phi')
     xlabel('time[s]')
     ylabel('bank angle \phi [deg]')
     
     nexttile
     plot(block_time, block_p, 'linewidth', 2)
-    grid on
     title('SIMULINK Simulation of roll rate, d\phi/dt')
     xlabel('time[s]')
     ylabel('roll rate d\phi/dt [deg/s]')
     
     nexttile
     plot(block_time, block_psi, 'linewidth', 2)
-    grid on
     title('SIMULINK Simulation of heading angle, \psi')
     xlabel('time[s]')
     ylabel('heading angle \psi [deg]')
     
     nexttile()
     plot(block_time, block_Y_R, 'linewidth', 2)
-    grid on
     title('SIMULINK Simulation of Lateral Displacement, Y_R')
     xlabel('time[s]')
     ylabel('lateral displacement, Y_R [m]')
@@ -226,8 +220,7 @@ for actuator = 1:numel(USE_ACTUATOR_CASE)
     
     % Plotting 'ideal' deflection angle (unsaturated, no slew rate)
     ax1 = nexttile([2 1]);
-    plot(block_time, block_del_a_ideal, 'linewidth', 2)
-    grid on
+    plot(tout, xout(2,:), 'linewidth', 2)
     title('Ideal(unconstrained) deflection angle, \delta_a')
     xlabel('time[s]')
     ylabel('deflection angle \delta_a [deg]')
@@ -235,14 +228,12 @@ for actuator = 1:numel(USE_ACTUATOR_CASE)
     % Compare to system w actuator limits
     ax12 = nexttile;
     plot(block_time, block_del_a_sat, 'linewidth', 2)
-    grid on
     title('Saturated deflection angle, \delta_a')
     xlabel('time[s]')
     ylabel('deflection angle \delta_a [deg]')
     
     ax22 = nexttile;
     plot(block_time, block_del_a_rate, 'linewidth', 2)
-    grid on
     title('Slew rate of saturated deflection angle, d\delta_a/dt')
     xlabel('time[s]')
     ylabel('def. angle rate d\delta_a/dt [deg/s]')
