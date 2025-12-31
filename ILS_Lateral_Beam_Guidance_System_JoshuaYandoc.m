@@ -3,7 +3,6 @@
 
 %% Phase 0 Part 1 - MATLAB Model
 
-clear;
 clc;
 close all;
 clear global;
@@ -160,8 +159,8 @@ model = 'Lateral_Beam_Guidance_System_Block_Diagram';
 % For use with actuator limits; -1 indicates 'ideal', unconstrained case
 USE_ACTUATOR_CASE = [-1 1 2 3];
 names = ["unconstrained case", "actuator 1", "actuator 2", "actuator 3"];
-% Load the SIMULINK model
-load_system(model);
+% Load the SIMULINK model if not already loaded
+if ~bdIsLoaded(model), load_system(model); end
 for actuator = 1:numel(USE_ACTUATOR_CASE)
     USE_ACTUATOR = USE_ACTUATOR_CASE(actuator);
     % Run the model and compare against all actuator limits

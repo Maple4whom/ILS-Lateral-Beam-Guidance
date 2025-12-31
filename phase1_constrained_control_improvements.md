@@ -21,7 +21,9 @@ Much like the phase 0 log, this document is meant to log the system's updates as
     - Saturation limit of +/- 20 deg - Dec. 27, 2025
     - Slew rate limit of +/- 10 deg/s - Dec. 27, 2025
 
-# Where to pick up next time
+# Where to pick up next time/activity log
 1. look into suspicious plots - investigate where proper feedback should go - Dec 28, 2025
-    Update: Investigated the behavior - unresolved --> will continue - Dec 28/29, 2025
-    Update: Resolved feedback behavior issue - Dec 29, 2025
+2.  Update: Investigated the behavior - unresolved --> will continue - Dec 28/29, 2025
+3.  Update: Resolved feedback behavior issue - Dec 29, 2025
+4. Testing model under different initial conditions to determine best actuator
+    a. Changed lateral offset from 150m to 250m
