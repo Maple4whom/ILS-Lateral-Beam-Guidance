@@ -158,6 +158,11 @@ ylabel('lateral displacement, Y_R [m]')
 model = 'Lateral_Beam_Guidance_System_Block_Diagram';
 % For use with actuator limits; -1 indicates 'ideal', unconstrained case
 USE_ACTUATOR_CASE = [-1 1 2 3];
+act_limits_str =... 
+    ["unconstrained amplitude and rate limit", ...
+    "amp limit: 10" + char(176) + ", rate limit: 5" + char(176) + "/s",...
+    "amp limit: 15" + char(176) + ", rate limit: 7.5" + char(176) + "/s",...
+    "amp limit: 20" + char(176) + ", rate limit: 10" + char(176) + "/s"];
 names = ["unconstrained case", "actuator 1", "actuator 2", "actuator 3"];
 % Load the SIMULINK model if not already loaded
 if ~bdIsLoaded(model), load_system(model); end
@@ -178,108 +183,127 @@ for actuator = 1:numel(USE_ACTUATOR_CASE)
         block_del_a_ideal = simout.del_a_ideal * (180/pi); % Convert to deg
     end
     
-    figure()
-    tiledlayout(2,2)
-    title(tiledlayout(2,2), 'SIMULINK Model States(' + ...
+    state_fig = figure();
+    t0 = tiledlayout(state_fig, 2,2);
+    title(t0, 'SIMULINK Model States(' + ...
         names(actuator) + ') - Joshua Yandoc', 'Color', [1 0 0])
     Title.FontSize = 18;
     Title.FontWeight = 'bold';
     
-    nexttile
+    nexttile(t0)
     plot(block_time, block_phi, 'linewidth', 2)
     grid on
+    legend(act_limits_str(actuator))
     title('SIMULINK Simulation of bank angle, \phi')
     xlabel('time[s]')
     ylabel('bank angle \phi [deg]')
     
-    nexttile
+    nexttile(t0)
     plot(block_time, block_p, 'linewidth', 2)
     grid on
+    legend(act_limits_str(actuator))
     title('SIMULINK Simulation of roll rate, d\phi/dt')
     xlabel('time[s]')
     ylabel('roll rate d\phi/dt [deg/s]')
     
-    nexttile
+    nexttile(t0)
     plot(block_time, block_psi, 'linewidth', 2)
     grid on
+    legend(act_limits_str(actuator))
     title('SIMULINK Simulation of heading angle, \psi')
     xlabel('time[s]')
     ylabel('heading angle \psi [deg]')
     
-    nexttile()
+    nexttile(t0)
     plot(block_time, block_Y_R, 'linewidth', 2)
     grid on
+    legend(act_limits_str(actuator))
     title('SIMULINK Simulation of Lateral Displacement, Y_R')
     xlabel('time[s]')
     ylabel('lateral displacement, Y_R [m]')
     
     
     % Saturation system comparison to ideal system
-    figure()
-    tiledlayout(2,2);
+    sat_fig = figure();
+    t1 = tiledlayout(sat_fig, 2,2);
 
-    title(tiledlayout(2,2), 'SIMULINK Model deflection angle(' + ...
+    title(t1, 'SIMULINK Model deflection angle(' + ...
         names(actuator) + ') - Joshua Yandoc', 'Color', [1 0 0])
     Title.FontSize = 18;
     Title.FontWeight = 'bold';
     
     % Plotting 'ideal' deflection angle (unsaturated, no slew rate)
-    ax1 = nexttile([2 1]);
-    plot(block_time, block_del_a_ideal, 'linewidth', 2)
+    ax1 = nexttile(t1, [2 1]);
+    plot(ax1, block_time, block_del_a_ideal, 'linewidth', 2)
     grid on
     title('Ideal(unconstrained) deflection angle, \delta_a')
     xlabel('time[s]')
     ylabel('deflection angle \delta_a [deg]')
     
     % Compare to system w actuator limits
-    ax12 = nexttile;
-    plot(block_time, block_del_a_sat, 'linewidth', 2)
+    ax12 = nexttile(t1);
+    plot(ax12, block_time, block_del_a_sat, 'linewidth', 2)
     grid on
+    legend(act_limits_str(actuator))
     title('Saturated deflection angle, \delta_a')
     xlabel('time[s]')
     ylabel('deflection angle \delta_a [deg]')
     
-    ax22 = nexttile;
-    plot(block_time, block_del_a_rate, 'linewidth', 2)
+    ax22 = nexttile(t1);
+    plot(ax22, block_time, block_del_a_rate, 'linewidth', 2)
     grid on
+    legend(act_limits_str(actuator))
     title('Slew rate of saturated deflection angle, d\delta_a/dt')
     xlabel('time[s]')
     ylabel('def. angle rate d\delta_a/dt [deg/s]')
 
+    % Store current states for current actuator for the purposes of
+    % plotting a comparison plot after
+    block_del_a_sat_AllCases(actuator, :) = block_del_a_sat';
+    block_phi_AllCases(actuator, :) = block_phi';
+    block_p_AllCases(actuator, :) = block_p';
+
 end
 
-%% After Phase 0
 
-% create array for the amplitutde limit and rate limit for each aileron
-% given in units of [deg] and [deg/s] - convert both to [rad] and [rad/s]
-% Amplitude_limit = [10, 15, 20];
-% Rate_limit = [5, 7.5, 10];
-% colors = {'r', 'g', 'k'};
-% 
-% figure()
-% tiledlayout(2,1)
-% nexttile
-% hold on
-% plot(tout, xout(2,:))
-% for actuator_number = 1:1:3
-%     yline(Amplitude_limit(actuator_number), colors{1, actuator_number})
-% end
-% hold off
-% ylim([-50 25])
-% title('Simulation of aileron deflection angle, \delta_a')
-% xlabel('time[s]')
-% ylabel('deflection angle \delta_a [deg]')
-% legend('\delta_a', 'actuator 1 - 10 deg', 'actuator 2 - 15 deg', 'actuator 3 - 20 deg')
-% 
-% nexttile
-% hold on
-% plot(tout, xout(3,:))
-% for actuator_number = 1:1:3
-%     yline(Rate_limit(actuator_number), colors{1, actuator_number})
-% end
-% hold off
-% ylim([-5, 15])
-% title('Simulation of aileron deflection angle rate, d\delta_a/dt')
-% xlabel('time[s]')
-% ylabel('deflection angle rate d\delta_a/dt [deg/s]')
-% legend('d\delta_a/dt', 'actuator 1 - 5 deg/s', 'actuator 2 - 7.5 deg/s', 'actuator 3 - 10 deg/s')
+compare_fig = figure();
+t2 = tiledlayout(compare_fig, 2,2);
+title(t2, 'Model comparisons, \delta_a - Joshua Yandoc', 'Color', [1 0 0])
+Title.FontSize = 18;
+Title.FontWeight = 'bold';
+
+ax1 = nexttile(t2, [2 1]);
+plot(ax1, block_time, block_del_a_ideal, 'linewidth', 2)
+grid on
+hold on
+for i = 2:1:4
+    plot(ax1, block_time, block_del_a_sat_AllCases(i,:))
+end
+title("Comparing deflection angle, \delta_a")
+legend(act_limits_str)
+xlabel('time[s]')
+ylabel('deflection angle \delta_a [deg]')
+
+ax12 = nexttile(t2);
+plot(ax12, block_time, block_phi_AllCases(1,:), 'linewidth', 2)
+grid on
+hold on
+for i = 2:1:4
+    plot(ax12, block_time, block_phi_AllCases(i,:))
+end
+title("Comparing bank angle, \phi")
+legend(act_limits_str)
+xlabel('time[s]')
+ylabel('bank angle \phi [deg]')
+
+ax22 = nexttile(t2);
+plot(ax22, block_time, block_p_AllCases(1,:), 'linewidth', 2)
+grid on
+hold on
+for i = 2:1:4
+    plot(ax22, block_time, block_p_AllCases(i,:))
+end
+title("Comparing roll rate, d\phi/dt")
+legend(act_limits_str)
+xlabel('time[s]')
+ylabel('roll rate d\phi/dt [deg/s]')
