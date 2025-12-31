@@ -25,5 +25,4 @@ Much like the phase 0 log, this document is meant to log the system's updates as
 1. look into suspicious plots - investigate where proper feedback should go - Dec 28, 2025
 2.  Update: Investigated the behavior - unresolved --> will continue - Dec 28/29, 2025
 3.  Update: Resolved feedback behavior issue - Dec 29, 2025
-4. Testing model under different initial conditions to determine best actuator
-    a. Changed lateral offset from 150m to 250m
+4. Cleaned up code a little and made a new plot (see commit titled "phase1-actuator-limits Updated code and plots" for more detailed explanation) - Dec 30, 2025
