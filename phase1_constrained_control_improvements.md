@@ -18,8 +18,11 @@ Much like the phase 0 log, this document is meant to log the system's updates as
     Regarding the feedback behavior issue - I tried various solutions: variant subsystem post DC motor, changing the deflection subsystem into saturated DC motor, and finally, imposing the saturation and rate limit within the coupled DC motor system itself
 
     # Values
-    - Saturation limit of +/- 20 deg - Dec. 27, 2025
-    - Slew rate limit of +/- 10 deg/s - Dec. 27, 2025
+    - Saturation limits of +/- [10, 15, 20] deg - Dec. 27, 2025
+    - Slew rate limits of +/- [5, 7.5, 10] deg/s - Dec. 27, 2025
+    - Chosen actuator limit set: - Dec 30, 2025 
+        - Amplitude (sat) limit: 20 deg
+        - Rate limit: 10 deg/s
 
 ## Testing/Validation with different initial conditions
 1. Scenario 0 - Original Refernce Case
@@ -58,6 +61,10 @@ Much like the phase 0 log, this document is meant to log the system's updates as
 4. Update: Cleaned up code a little and made a new plot (see commit titled "phase1-actuator-limits
     Update: Updated code and plots" for more detailed explanation) - Dec 30, 2025
 5. Update: More code cleaning/optimization before moving on - Created new functions 'plot_script_sim' 'plot_simulink_sim_states', and 'plot_delA' to handle the plotting and make main script look much more clean/easier to read - Jan 1, 2026
+    Pick-up: Finish writing 'plot_delA' function - Jan 1, 2026
+6. Update: Finished writing 'plot_delA' as well as writing another function, 'plot_comparison' to compare states on a single plot - Jan 1/2, 2026
+    Comment: While analytical progress wasn't made today, the consolidation and refactoring of my code ensures better readability down the line as the project progresses further.
+7. Pick-up: Sim with different initial conditions + begin retuning with the chosen actuator limit set - Jan 2, 2026
 
 ## Future work/optimization
 1. look into making another function 'compare_act_limits' that only runs the for-loop for plotting/comparing different actuator limits when a conditional is met (say, USE_ACT_LIMITS == true/false ?) - Jan 1, 2026

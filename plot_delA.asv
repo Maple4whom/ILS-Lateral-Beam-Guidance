@@ -1,4 +1,4 @@
-function [tl, ax, h] = plot_delA(simout, title_str_concat)
+function [tl, ax, h] = plot_delA(simout,iterate, block_del_a_ideal, title_str_concat)
 
     % tl = tiled layout handle
     % ax = axes handles
@@ -12,11 +12,11 @@ function [tl, ax, h] = plot_delA(simout, title_str_concat)
 
     % In the case of calling this function in a for loop, make sure to keep
     % the del_a ideal data unchanged
-    if isempty(block_del_a_ideal)
+    if iterate == -1
         block_del_a_ideal = simout.del_a_ideal * (180/pi); % Convert to deg
     end
 
-    if nargin < 2 
+    if nargin < 3 
         title_str_concat = '';
     end
 

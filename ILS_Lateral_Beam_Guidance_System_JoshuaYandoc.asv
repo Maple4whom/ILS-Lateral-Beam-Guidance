@@ -152,7 +152,7 @@ for actuator = 1:numel(USE_ACTUATOR_CASE)
 
 end
 
-% Create a comparison plot for all actuator sets
+% Create a comparison plot for all actuators
 compare_fig = figure();
 tl = tiledlayout(compare_fig, 2,2);
 
@@ -164,18 +164,14 @@ ax(1) = nexttile(tl, [2 1]);
 ax(2) = nexttile;
 ax(3) = nexttile;
 
-% use a multi-dim array for easier syntax in for loop below
 states_AllCases(:, :, 1) = block_del_a_sat_AllCases;
 states_AllCases(:, :, 2) = block_phi_AllCases;
 states_AllCases(:, :, 3) = block_p_AllCases;
 
-% for use in tiled plot titles and y-axis label
 state_str = ["deflection angle, \delta_a [deg]",...
              "bank angle, \phi [deg]", "roll rate, d\phi/dt [deg/s]"];
 for i = 1:3
-    % Make the comparison plot
     [ax(i), h] = plot_comparison(simout, states_AllCases(:, :, i),...
                      ax(i), state_str(i));
-    % Set legend
     legend(ax(i), h, act_limits_str)
 end
