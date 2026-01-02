@@ -98,129 +98,51 @@ end
 
 % convert the state variables with units of [rad] back to units of [deg]
 xout(2:6, :) = rad2deg(xout(2:6, :));
+% Plot the states
+plot_script_sim(tout, xout)
 
-figure()
 
-tiledlayout(3,3)
-title(tiledlayout(3,3), "State variables of guidance system sim" + ...
-    "(Retuned) - Joshua Yandoc", 'Color', [1 0 0]);
-Title.FontSize = 18;
-Title.FontWeight = 'bold';
+%% Phase 0 Part 2/Phase 1 part 1 - SIMULINK Model
 
-ax11 = nexttile(1);
-plot(tout, xout(1,:), 'linewidth', 2)
-title('Simulation of current, i')
-xlabel('time[s]')
-ylabel('Current i [A]')
-ylim(ax11, [-0.5 0.25])
 
-ax12 = nexttile(2);
-plot(tout, xout(2,:), 'linewidth', 2)
-title('Simulation of aileron deflection angle, \delta_a')
-xlabel('time[s]')
-ylabel('deflection angle \delta_a [deg]')
-
-ax13 = nexttile(3);
-plot(tout, xout(3,:), 'linewidth', 2)
-title('Simulation of aileron deflection angle rate, d\delta_a/dt')
-xlabel('time[s]')
-ylabel('def. angle rate d\delta_a/dt [deg/s]')
-ylim(ax13, [-50 25])
-
-ax21 = nexttile(4);
-plot(tout, xout(4,:), 'linewidth', 2)
-title('Simulation of bank angle, \phi')
-xlabel('time[s]')
-ylabel('bank angle \phi [deg]')
-
-ax22 = nexttile(5);
-plot(tout, xout(5,:), 'linewidth', 2)
-title('Simulation of roll rate, d\phi/dt')
-xlabel('time[s]')
-ylabel('roll rate d\phi/dt [deg/s]')
-
-ax23 = nexttile(6);
-plot(tout, xout(6,:), 'linewidth', 2)
-title('Simulation of heading angle, \psi')
-xlabel('time[s]')
-ylabel('heading angle \psi [deg]')
-
-ax32 = nexttile(8);
-plot(tout, xout(7,:), 'linewidth', 2)
-title('Simulation of Lateral Displacement, Y_R')
-xlabel('time[s]')
-ylabel('lateral displacement, Y_R [m]')
-
-%% Phase 0 Part 2 - SIMULINK Model
-
-% Plotting the SIMULINK Model 
-
+% init model str to load later
 model = 'Lateral_Beam_Guidance_System_Block_Diagram';
+
 % For use with actuator limits; -1 indicates 'ideal', unconstrained case
 USE_ACTUATOR_CASE = [-1 1 2 3];
+% for use in plot legend
 act_limits_str =... 
     ["unconstrained amplitude and rate limit", ...
     "amp limit: 10" + char(176) + ", rate limit: 5" + char(176) + "/s",...
     "amp limit: 15" + char(176) + ", rate limit: 7.5" + char(176) + "/s",...
     "amp limit: 20" + char(176) + ", rate limit: 10" + char(176) + "/s"];
+% for use in plot title
 names = ["unconstrained case", "actuator 1", "actuator 2", "actuator 3"];
+
 % Load the SIMULINK model if not already loaded
 if ~bdIsLoaded(model), load_system(model); end
+
+% Go through each actuator case
 for actuator = 1:numel(USE_ACTUATOR_CASE)
+
     USE_ACTUATOR = USE_ACTUATOR_CASE(actuator);
+
     % Run the model and compare against all actuator limits
     simout = sim(model);
-    % Get the data from the SIMULINK model
-    block_time = simout.tout;
-    block_Y_R = simout.Y_R;
-    block_p = simout.p;
-    block_phi = simout.phi;
-    block_psi = simout.psi;
+    
     % Use for plotting saturated system
     block_del_a_rate = simout.del_a_rate * (180/pi); % Convert to deg
     block_del_a_sat = simout.del_a * (180/pi); % Convert to deg
     if actuator == 1
         block_del_a_ideal = simout.del_a_ideal * (180/pi); % Convert to deg
     end
-    
-    state_fig = figure();
-    t0 = tiledlayout(state_fig, 2,2);
-    title(t0, 'SIMULINK Model States(' + ...
-        names(actuator) + ') - Joshua Yandoc', 'Color', [1 0 0])
-    Title.FontSize = 18;
-    Title.FontWeight = 'bold';
-    
-    nexttile(t0)
-    plot(block_time, block_phi, 'linewidth', 2)
-    grid on
-    legend(act_limits_str(actuator))
-    title('SIMULINK Simulation of bank angle, \phi')
-    xlabel('time[s]')
-    ylabel('bank angle \phi [deg]')
-    
-    nexttile(t0)
-    plot(block_time, block_p, 'linewidth', 2)
-    grid on
-    legend(act_limits_str(actuator))
-    title('SIMULINK Simulation of roll rate, d\phi/dt')
-    xlabel('time[s]')
-    ylabel('roll rate d\phi/dt [deg/s]')
-    
-    nexttile(t0)
-    plot(block_time, block_psi, 'linewidth', 2)
-    grid on
-    legend(act_limits_str(actuator))
-    title('SIMULINK Simulation of heading angle, \psi')
-    xlabel('time[s]')
-    ylabel('heading angle \psi [deg]')
-    
-    nexttile(t0)
-    plot(block_time, block_Y_R, 'linewidth', 2)
-    grid on
-    legend(act_limits_str(actuator))
-    title('SIMULINK Simulation of Lateral Displacement, Y_R')
-    xlabel('time[s]')
-    ylabel('lateral displacement, Y_R [m]')
+
+    % Plot some states from simulink sim 
+    [tl, ax, h] = plot_simulink_sim_states(simout, names(actuator));
+    % make legend for each tiled plot
+    for j = 1:4
+        legend(ax(j), h(j), act_limits_str(actuator));
+    end
     
     
     % Saturation system comparison to ideal system
@@ -260,8 +182,8 @@ for actuator = 1:numel(USE_ACTUATOR_CASE)
     % Store current states for current actuator for the purposes of
     % plotting a comparison plot after
     block_del_a_sat_AllCases(actuator, :) = block_del_a_sat';
-    block_phi_AllCases(actuator, :) = block_phi';
-    block_p_AllCases(actuator, :) = block_p';
+    block_phi_AllCases(actuator, :) = simout.phi';
+    block_p_AllCases(actuator, :) = simout.p';
 
 end
 
