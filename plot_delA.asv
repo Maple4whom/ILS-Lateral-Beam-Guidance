@@ -1,0 +1,56 @@
+function [tl, ax, h] = plot_delA(simout,iterate, block_del_a_ideal, title_str_concat)
+
+    % tl = tiled layout handle
+    % ax = axes handles
+    % h = line handles
+
+    % Use for plotting saturated system
+    block_time = simout.tout;
+    block_del_a_rate = simout.del_a_rate * (180/pi); % Convert to deg
+    block_del_a_sat = simout.del_a * (180/pi); % Convert to deg
+    persistent block_del_a_ideal
+
+    % In the case of calling this function in a for loop, make sure to keep
+    % the del_a ideal data unchanged
+    if iterate == -1
+        block_del_a_ideal = simout.del_a_ideal * (180/pi); % Convert to deg
+    end
+
+    if nargin < 3 
+        title_str_concat = '';
+    end
+
+    % Saturation system comparison to ideal system
+    sat_fig = figure();
+    tl = tiledlayout(sat_fig, 2,2);
+
+    title(tl, 'SIMULINK Model deflection angle(' + ...
+        title_str_concat + ') - Joshua Yandoc', 'Color', [1 0 0])
+    Title.FontSize = 18;
+    Title.FontWeight = 'bold';
+    
+    % Plotting 'ideal' deflection angle (unsaturated, no slew rate)
+    ax(1) = nexttile(tl, [2 1]);
+    h(1) = plot(ax(1), block_time, block_del_a_ideal, 'linewidth', 2);
+    grid on
+    title('Ideal(unconstrained) deflection angle, \delta_a')
+    xlabel('time[s]')
+    ylabel('deflection angle \delta_a [deg]')
+    
+    % Compare to system w actuator limits
+    ax(2) = nexttile(tl);
+    plot(ax(2), block_time, block_del_a_sat, 'linewidth', 2);
+    grid on
+    title('Saturated deflection angle, \delta_a')
+    xlabel('time[s]')
+    ylabel('deflection angle \delta_a [deg]')
+    
+    ax(3) = nexttile(tl);
+    plot(ax(3), block_time, block_del_a_rate, 'linewidth', 2)
+    grid on
+    title('Slew rate of saturated deflection angle, d\delta_a/dt')
+    xlabel('time[s]')
+    ylabel('def. angle rate d\delta_a/dt [deg/s]')
+
+
+end
